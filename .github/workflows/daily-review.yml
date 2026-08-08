@@ -1,0 +1,43 @@
+name: 每日股票复盘自动更新
+
+on:
+  schedule:
+    # 北京时间 16:40 = UTC 08:40，周一至周五（收盘后数据稳定）
+    - cron: '40 8 * * 1-5'
+  workflow_dispatch: {}   # 支持手动触发（Actions 页面点 Run workflow）
+
+permissions:
+  contents: write
+
+jobs:
+  update-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 获取日期
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 安装依赖
+        run: pip install akshare pandas
+
+      - name: 抓取行情数据
+        run: python scripts/fetch_data.py
+
+      - name: 生成复盘报告
+        run: python scripts/generate_report.py
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      - name: 提交更新（自动触发 GitHub Pages 重发布）
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: '🤖 自动更新 ${{ steps.date.outputs.date }} 复盘'
+          file_pattern: 'data/'
