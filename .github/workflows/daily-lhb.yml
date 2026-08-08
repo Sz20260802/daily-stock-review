@@ -1,0 +1,41 @@
+name: 龙虎榜补抓（盘后）
+
+on:
+  schedule:
+    # 北京时间 18:40 = UTC 10:40（龙虎榜通常 18:00 后披露）
+    - cron: '40 10 * * 1-5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-lhb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 获取日期
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 安装依赖
+        run: pip install akshare pandas
+
+      - name: 补抓龙虎榜
+        run: python scripts/fetch_data.py --lhb-only
+
+      - name: 合并进当日复盘
+        run: python scripts/generate_report.py --merge
+
+      - name: 提交更新
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: '🤖 补抓 ${{ steps.date.outputs.date }} 龙虎榜'
+          file_pattern: 'data/'
