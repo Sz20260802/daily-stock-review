@@ -17,15 +17,26 @@ BASE = Path(__file__).resolve().parent.parent
 RAW_DIR = BASE / "data" / "raw"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 TODAY = datetime.now().strftime("%Y-%m-%d")
-DATE_EM = datetime.now().strftime("%Y%m%d")  # 东财接口格式 YYYYMMDD
+DATE_EM = datetime.now().strftime("%Y%m%d")
 
 
 def safe(name, fn):
     try:
         return fn()
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print(f"[warn] {name} 抓取失败: {e}")
         return None
+
+
+def is_trading_day(date_str: str) -> bool:
+    """用新浪交易日历判断是否为 A 股交易日"""
+    try:
+        df = ak.tool_trade_date_hist_sina()
+        days = {str(d) for d in df["trade_date"].astype(str)}
+        return date_str in days
+    except Exception as e:
+        print(f"[warn] 交易日历获取失败，按交易日处理: {e}")
+        return True
 
 
 def fetch_indices():
@@ -89,7 +100,7 @@ def fetch_limit_up():
     max_board = max((x["consecutive"] for x in top), default=0)
     return {
         "top10": top[:10],
-        "max_board": max_board,   # 最高板（空间板）
+        "max_board": max_board,
         "ladders": {k: v for k, v in sorted(
             ladders.items(), key=lambda kv: int(kv[0].replace("板", "")), reverse=True)},
     }
@@ -143,6 +154,10 @@ def main():
         return 0
 
     # —— 全量抓取模式 ——
+    if not is_trading_day(TODAY):
+        print(f"{TODAY} 非 A 股交易日，跳过抓取（页面将继续显示最近一个交易日的复盘）。")
+        return 0
+
     print(f"开始抓取 {TODAY} 数据…")
     indices_data = safe("指数", fetch_indices)
     stats = safe("涨跌统计", fetch_market_stats)
@@ -152,10 +167,9 @@ def main():
     lhb = safe("龙虎榜", fetch_lhb)
 
     if not indices_data or not indices_data["indices"]:
-        print("今日指数为空（可能休市），跳过写入。")
+        print("今日指数为空，跳过写入。")
         return 0
 
-    # 炸板率 = 炸板数 / (涨停数 + 炸板数)
     broken_rate = None
     if stats and zbgc and stats.get("limit_up") is not None:
         denom = stats["limit_up"] + zbgc.get("count", 0)
