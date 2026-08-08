@@ -73,6 +73,7 @@ function renderMarket(market) {
     <span class="chip">下跌 ${st.decliners ?? "-"} 家</span>
     <span class="chip">平盘 ${st.flat ?? "-"}</span>
     ${st.turnover_yi ? `<span class="chip">两市成交 ${st.turnover_yi} 亿</span>` : ""}
+    ${market.broken_rate != null ? `<span class="chip">炸板率 ${market.broken_rate}%</span>` : ""}
   </div>`;
   if (market.hot_sectors?.length) {
     html += `<div class="stats-row"><b style="font-size:14px">热门板块：</b>`;
@@ -86,6 +87,47 @@ function renderMarket(market) {
     html += `<div class="thesis" style="margin-top:14px"><span class="label">📝 今日小结（AI）</span>${esc(market.summary)}</div>`;
   }
   return `<div>${html}<div class="meta" style="margin-top:8px">${isDemo} 生成时间：${esc(market.generated_at || "")}</div></div>`;
+}
+
+/* ---------- 渲染：涨停梯队 / 龙虎榜 ---------- */
+function renderLadder(market) {
+  if (!market) return `<div class="notice">暂无数据</div>`;
+  const ladder = market.limit_up_ladder || {};
+  const zbgc = market.broken_board || {};
+  const lhb = market.lhb || {};
+  let html = `<div class="stats-row">`;
+  if (ladder.max_board) html += `<span class="chip">最高板：${ladder.max_board} 板</span>`;
+  if (zbgc.count != null) html += `<span class="chip">炸板：${zbgc.count} 家</span>`;
+  html += `</div>`;
+
+  if (ladder.ladders && Object.keys(ladder.ladders).length) {
+    html += `<div class="sub-block"><span class="block-title">🎢 连板梯队</span>`;
+    for (const [k, v] of Object.entries(ladder.ladders)) {
+      html += `<div style="margin:6px 0"><span class="tag" style="background:#1e3a8a;color:#fff">${esc(k)}</span> ${v.map(esc).join("、")}</div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (ladder.top10?.length) {
+    html += `<div class="sub-block"><span class="block-title">🔥 涨停 TOP10</span><div class="inst-chips">`;
+    ladder.top10.forEach(s => {
+      html += `<span class="inst-chip">${esc(s.name)} <span class="rid">${s.consecutive}板</span></span>`;
+    });
+    html += `</div></div>`;
+  }
+
+  if (lhb.top10?.length) {
+    html += `<div class="sub-block"><span class="block-title">🐉 龙虎榜 TOP10</span>`;
+    html += `<table class="evidence"><thead><tr><th>名称</th><th>涨跌幅</th><th>净买额(亿)</th><th>上榜原因</th></tr></thead><tbody>`;
+    lhb.top10.forEach(r => {
+      const cls = r.close_pct >= 0 ? "up" : "down";
+      html += `<tr><td>${esc(r.name)}</td><td class="${cls}">${r.close_pct > 0 ? "+" : ""}${r.close_pct}%</td><td>${r.net_buy_yi}</td><td>${esc(r.reason || "")}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  } else {
+    html += `<div class="notice" style="padding:16px">龙虎榜通常 18:00 后披露，当日晚间会自动补抓。</div>`;
+  }
+  return html;
 }
 
 /* ---------- 渲染：主题卡片 ---------- */
@@ -173,6 +215,7 @@ async function renderReview(date) {
     document.getElementById("header-meta").textContent =
       `复盘日期：${data.meta?.date} ｜ 生成时间：${data.meta?.generated_at || "-"} ｜ 来源：${data.meta?.source || "-"}`;
     document.getElementById("market-content").innerHTML = renderMarket(data.market);
+    document.getElementById("ladder-content").innerHTML = renderLadder(data.market);
     document.getElementById("themes-content").innerHTML =
       (data.themes || []).map((t, i) => renderTheme(t, i)).join("") || `<div class="notice">暂无主题数据</div>`;
     document.getElementById("calendar-content").innerHTML = renderCalendar(data.calendar_events);
