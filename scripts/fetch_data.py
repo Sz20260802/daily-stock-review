@@ -2,8 +2,9 @@
 """抓取每日 A 股收盘数据 → data/raw/YYYY-MM-DD.json
 数据源：AkShare（东方财富 / 新浪备用），带重试和多源回退。
 用法:
-  python scripts/fetch_data.py             # 全量抓取
-  python scripts/fetch_data.py --lhb-only  # 仅补抓龙虎榜并合并
+  python scripts/fetch_data.py                        # 抓今天
+  python scripts/fetch_data.py --date 2026-08-10      # 抓指定日期（补录）
+  python scripts/fetch_data.py --lhb-only             # 仅补抓龙虎榜并合并
 """
 import argparse
 import json
@@ -17,12 +18,9 @@ import akshare as ak
 BASE = Path(__file__).resolve().parent.parent
 RAW_DIR = BASE / "data" / "raw"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
-TODAY = datetime.now().strftime("%Y-%m-%d")
-DATE_EM = datetime.now().strftime("%Y%m%d")   # 东财接口需要 YYYYMMDD
 
 
 def safe(name, fn, retries=3, delay=3):
-    """带重试的抓取包装"""
     for attempt in range(1, retries + 1):
         try:
             return fn()
@@ -34,7 +32,6 @@ def safe(name, fn, retries=3, delay=3):
 
 
 def fetch_indices():
-    """沪深重要指数：优先东财，失败回退新浪"""
     try:
         df = ak.stock_zh_index_spot_em(symbol="沪深重要指数")
         targets = {
@@ -75,7 +72,6 @@ def fetch_indices():
 
 
 def fetch_market_stats():
-    """涨跌家数、涨停/跌停（乐咕乐股·赚钱效应）——列名容错"""
     df = ak.stock_market_activity_legu()
     if df is None or df.empty:
         raise ValueError("返回为空")
@@ -100,7 +96,6 @@ def fetch_market_stats():
 
 
 def fetch_hot_sectors():
-    """行业资金流 TOP5（东财，失败返回空列表）"""
     df = ak.stock_sector_fund_flow_rank(indicator="今日", sector_type="行业资金流")
     out = []
     for _, r in df.head(5).iterrows():
@@ -112,9 +107,8 @@ def fetch_hot_sectors():
     return out
 
 
-def fetch_limit_up():
-    """涨停股池 → 涨停梯队（日期用 YYYYMMDD）"""
-    df = ak.stock_zt_pool_em(date=DATE_EM)
+def fetch_limit_up(date_em):
+    df = ak.stock_zt_pool_em(date=date_em)
     top, ladders = [], {}
     for _, r in df.iterrows():
         item = {"name": str(r["名称"]), "code": str(r["代码"]),
@@ -132,9 +126,8 @@ def fetch_limit_up():
     }
 
 
-def fetch_zt_pool_zbgc():
-    """炸板股池（日期用 YYYYMMDD）"""
-    df = ak.stock_zt_pool_zbgc_em(date=DATE_EM)
+def fetch_zt_pool_zbgc(date_em):
+    df = ak.stock_zt_pool_zbgc_em(date=date_em)
     return {
         "count": len(df),
         "top": [{"name": str(r["名称"]), "code": str(r["代码"])}
@@ -142,9 +135,8 @@ def fetch_zt_pool_zbgc():
     }
 
 
-def fetch_lhb():
-    """龙虎榜详情（东财，18:00 后披露）"""
-    df = ak.stock_lhb_detail_em(start_date=DATE_EM, end_date=DATE_EM)
+def fetch_lhb(date_em):
+    df = ak.stock_lhb_detail_em(start_date=date_em, end_date=date_em)
     out = []
     for _, r in df.head(10).iterrows():
         out.append({
@@ -157,7 +149,6 @@ def fetch_lhb():
 
 
 def is_trading_day(date_str):
-    """用新浪交易日历判断是否为 A 股交易日"""
     try:
         df = ak.tool_trade_date_hist_sina()
         days = {str(d) for d in df["trade_date"].astype(str)}
@@ -169,18 +160,20 @@ def is_trading_day(date_str):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--date", default=None, help="日期 YYYY-MM-DD，默认今天")
     parser.add_argument("--lhb-only", action="store_true", help="仅补抓龙虎榜合并进当日 raw")
     args = parser.parse_args()
 
-    raw_path = RAW_DIR / f"{TODAY}.json"
+    date_str = args.date or datetime.now().strftime("%Y-%m-%d")
+    date_em = date_str.replace("-", "")   # 东财接口需要 YYYYMMDD
+    raw_path = RAW_DIR / f"{date_str}.json"
 
-    # —— 龙虎榜补抓模式 ——
     if args.lhb_only:
         if not raw_path.exists():
-            print("当日 raw 不存在，无法合并龙虎榜。")
+            print(f"{date_str} 当日 raw 不存在，无法合并龙虎榜。")
             return 1
         payload = json.loads(raw_path.read_text(encoding="utf-8"))
-        lhb = safe("龙虎榜", fetch_lhb)
+        lhb = safe("龙虎榜", lambda: fetch_lhb(date_em))
         if not lhb or not lhb.get("top10"):
             print("龙虎榜暂未更新（通常 18:00 后披露），本次跳过。")
             return 0
@@ -190,18 +183,17 @@ def main():
         print("龙虎榜已合并。")
         return 0
 
-    # —— 全量抓取模式 ——
-    if not is_trading_day(TODAY):
-        print(f"{TODAY} 非 A 股交易日，跳过抓取。")
+    if not is_trading_day(date_str):
+        print(f"{date_str} 非 A 股交易日，跳过抓取。")
         return 0
 
-    print(f"开始抓取 {TODAY} 数据…")
+    print(f"开始抓取 {date_str} 数据…")
     indices_data = safe("指数", fetch_indices)
     stats = safe("涨跌统计", fetch_market_stats)
     sectors = safe("板块资金流", fetch_hot_sectors)
-    zt = safe("涨停梯队", fetch_limit_up)
-    zbgc = safe("炸板", fetch_zt_pool_zbgc)
-    lhb = safe("龙虎榜", fetch_lhb)
+    zt = safe("涨停梯队", lambda: fetch_limit_up(date_em))
+    zbgc = safe("炸板", lambda: fetch_zt_pool_zbgc(date_em))
+    lhb = safe("龙虎榜", lambda: fetch_lhb(date_em))
 
     if not indices_data or not indices_data.get("indices"):
         print("指数抓取失败（可能网络被屏蔽），今日不写入。")
@@ -214,7 +206,7 @@ def main():
             broken_rate = round(zbgc["count"] / denom * 100, 1)
 
     payload = {
-        "date": TODAY,
+        "date": date_str,
         "fetched_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00"),
         "indices": indices_data["indices"],
         "turnover_yi": indices_data.get("turnover_yi"),

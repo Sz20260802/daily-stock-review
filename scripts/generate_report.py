@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """根据 raw 数据生成复盘 JSON → data/reviews/{date}.json，并更新 latest.json / index.json
-可选功能：
-  - DEEPSEEK_API_KEY 环境变量存在时，自动调用 DeepSeek 生成"今日小结"
-  - REVIEW_PROMPT    环境变量可覆盖默认分析 Prompt（自定义个人思维模式，换行用 \n）
 用法:
-  python scripts/generate_report.py           # 生成/覆盖当日复盘
-  python scripts/generate_report.py --merge   # 合并模式：保留已有主题/事件，只更新 market
+  python scripts/generate_report.py                 # 生成今天
+  python scripts/generate_report.py --date 2026-08-10   # 指定日期（补录）
+  python scripts/generate_report.py --merge         # 合并模式：保留已有主题/事件，只更新 market
 """
 import argparse
 import json
@@ -19,7 +17,6 @@ BASE = Path(__file__).resolve().parent.parent
 RAW_DIR = BASE / "data" / "raw"
 REVIEW_DIR = BASE / "data" / "reviews"
 REVIEW_DIR.mkdir(parents=True, exist_ok=True)
-TODAY = datetime.now().strftime("%Y-%m-%d")
 
 DEFAULT_PROMPT = """你是一名有 10 年经验的 A 股复盘分析师，风格克制、客观、数据驱动。
 以下是 {date} 的 A 股收盘数据（JSON）：
@@ -39,18 +36,18 @@ DEFAULT_PROMPT = """你是一名有 10 年经验的 A 股复盘分析师，风�
 - 语气专业、不夸大、不喊单，结尾不喊口号。"""
 
 
-def build_prompt(market: dict) -> str:
+def build_prompt(date_str, market):
     prompt = os.environ.get("REVIEW_PROMPT", "").strip().replace("\\n", "\n")
     if not prompt:
         prompt = DEFAULT_PROMPT
-    return prompt.format(date=TODAY, data=json.dumps(market, ensure_ascii=False))
+    return prompt.format(date=date_str, data=json.dumps(market, ensure_ascii=False))
 
 
-def llm_summary(market: dict, api_key: str) -> str:
+def llm_summary(date_str, market, api_key):
     body = json.dumps({
         "model": "deepseek-chat",
-        "messages": [{"role": "user", "content": build_prompt(market)}],
-        "temperature": 0.4,   # 复盘要稳，温度调低减少发散
+        "messages": [{"role": "user", "content": build_prompt(date_str, market)}],
+        "temperature": 0.4,
         "max_tokens": 400,
     }).encode("utf-8")
     req = urllib.request.Request(
@@ -63,12 +60,12 @@ def llm_summary(market: dict, api_key: str) -> str:
         with urllib.request.urlopen(req, timeout=90) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return data["choices"][0]["message"]["content"].strip()
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print(f"[warn] LLM 总结失败: {e}")
         return ""
 
 
-def build_market(raw: dict) -> dict:
+def build_market(raw):
     return {
         "generated_at": raw.get("fetched_at", ""),
         "indices": raw.get("indices", []),
@@ -85,39 +82,39 @@ def build_market(raw: dict) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--merge", action="store_true",
-                        help="合并模式：保留已有主题/事件等内容，只更新 market")
+    parser.add_argument("--date", default=None, help="日期 YYYY-MM-DD，默认今天")
+    parser.add_argument("--merge", action="store_true", help="保留已有主题/事件等内容，只更新 market")
     args = parser.parse_args()
 
-    raw_path = RAW_DIR / f"{TODAY}.json"
+    date_str = args.date or datetime.now().strftime("%Y-%m-%d")
+    raw_path = RAW_DIR / f"{date_str}.json"
     if not raw_path.exists():
-        print("今日原始数据不存在（非交易日或抓取跳过），退出。")
+        print(f"{date_str} 原始数据不存在，先运行 fetch_data.py 或指定正确日期。")
         return 0
     raw = json.loads(raw_path.read_text(encoding="utf-8"))
     if not raw.get("indices"):
-        print("今日指数为空，退出。")
+        print(f"{date_str} 指数为空，退出。")
         return 0
 
-    out_path = REVIEW_DIR / f"{TODAY}.json"
+    out_path = REVIEW_DIR / f"{date_str}.json"
     prev = {}
     if args.merge and out_path.exists():
         prev = json.loads(out_path.read_text(encoding="utf-8"))
         print("合并模式：保留已有主题/事件/关联/洞察。")
 
     market = build_market(raw)
-    # 已有小结则保留，避免重复调用 LLM
     if prev.get("market", {}).get("summary"):
         market["summary"] = prev["market"]["summary"]
 
     api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
     if api_key and not market["summary"]:
-        market["summary"] = llm_summary(market, api_key)
+        market["summary"] = llm_summary(date_str, market, api_key)
 
     review = {
         "meta": {
-            "date": TODAY,
+            "date": date_str,
             "generated_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00"),
-            "source": "github-actions",
+            "source": "local-script",
         },
         "market": market,
         "themes": prev.get("themes", []),
@@ -134,11 +131,11 @@ def main():
     dates = []
     if index_path.exists():
         dates = json.loads(index_path.read_text(encoding="utf-8")).get("dates", [])
-    if TODAY not in dates:
-        dates.append(TODAY)
+    if date_str not in dates:
+        dates.append(date_str)
         dates.sort()
     index_path.write_text(
-        json.dumps({"dates": dates, "latest": TODAY}, ensure_ascii=False, indent=2),
+        json.dumps({"dates": dates, "latest": date_str}, ensure_ascii=False, indent=2),
         encoding="utf-8")
 
     print(f"已生成复盘 {out_path}")
