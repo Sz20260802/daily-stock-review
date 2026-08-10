@@ -7,7 +7,7 @@ st.set_page_config(page_title="每日股票复盘报告", page_icon="📈", layo
 
 # ============ 配置区：改成你的 GitHub 用户名（和仓库地址完全一致） ============
 GITHUB_USER = "sZ20260802"      # ← 你的用户名
-REPO        = "stock-review-app"
+REPO        = "daily-stock-review"
 # ==============================================================================
 
 CSS = """
