@@ -1,15 +1,14 @@
 import json
+import base64
 import requests
 import streamlit as st
 
 st.set_page_config(page_title="每日股票复盘报告", page_icon="📈", layout="wide")
 
-# ============ 配置区：改成你自己的 GitHub 用户名 ============
-GITHUB_USER = "Sz20260802"      # ← 改成你的用户名
+# ============ 配置区：改成你的 GitHub 用户名（和仓库地址完全一致） ============
+GITHUB_USER = "sZ20260802"      # ← 你的用户名
 REPO        = "stock-review-app"
-BRANCH      = "main"
-BASE = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO}/{BRANCH}/data/reviews/"
-# ===========================================================
+# ==============================================================================
 
 CSS = """
 <style>
@@ -42,18 +41,42 @@ td { border-top:1px solid #e5e7eb; padding:7px 10px; }
 def esc(s):
     return str(s if s is not None else "").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
 
+API = f"https://api.github.com/repos/{GITHUB_USER}/{REPO}/contents/data/reviews"
+
 @st.cache_data(ttl=600, show_spinner="加载数据…")
-def get_json(path):
-    r = requests.get(BASE + path, timeout=15)
-    r.raise_for_status()
-    return r.json()
+def list_review_files():
+    """GitHub Contents API 列出 data/reviews/ 下所有复盘文件（自动用默认分支）"""
+    try:
+        r = requests.get(API, timeout=15)
+        if r.status_code == 404:
+            return None
+        r.raise_for_status()
+        dates = [f["name"][:-5] for f in r.json() if f["name"].endswith(".json")]
+        return sorted(dates)
+    except Exception as e:
+        print(f"[warn] 列表获取失败: {e}")
+        return None
+
+@st.cache_data(ttl=600, show_spinner="读取数据…")
+def get_review(date):
+    """GitHub Contents API 读取指定日期的复盘文件（base64 解码）"""
+    url = f"{API}/{date}.json"
+    try:
+        r = requests.get(url, timeout=15)
+        if r.status_code == 404:
+            return None, f"仓库里没有 {date}.json"
+        r.raise_for_status()
+        content = base64.b64decode(r.json()["content"]).decode("utf-8")
+        return json.loads(content), None
+    except Exception as e:
+        return None, str(e)
 
 def radar_svg(s):
+    import math
     size, cx, cy, R = 170, 85, 85, 58
     labels = ["供需","估值","阶段"]
     vals = [s.get("supply_demand",0), s.get("valuation",0), s.get("stage",0)]
     angles = [-90, 30, 150]
-    import math
     rad = [a*math.pi/180 for a in angles]
     svg = f'<svg viewBox="0 0 {size} {size}" style="max-width:200px">'
     for lv in [0.25,0.5,0.75,1]:
@@ -70,7 +93,7 @@ def radar_svg(s):
     return svg + "</svg>"
 
 def render_market(m):
-    html = f'<h3 style="margin-top:0">📊 市场总览</h3>'
+    html = '<h3 style="margin-top:0">📊 市场总览</h3>'
     if not m or not m.get("indices"):
         return html + '<p style="color:#6b7280">本日暂无市场数据（等待自动任务生成）</p>'
     html += '<div class="index-grid">'
@@ -190,20 +213,22 @@ def render_insights(its):
 
 def main():
     st.markdown(CSS, unsafe_allow_html=True)
-    try:
-        idx = get_json("index.json")
-    except Exception:
-        idx = {"dates": ["latest"], "latest": "latest"}
 
-    dates = idx.get("dates", [])
-    latest = idx.get("latest", "latest")
-    date = st.selectbox("📅 选择复盘日期", options=["latest"] + dates,
-                        format_func=lambda d: "最新（" + latest + "）" if d == "latest" else d)
+    dates = list_review_files()
+    if not dates:
+        st.error("无法读取仓库 data/reviews/ 目录。\n\n请检查：\n"
+                 "1) GITHUB_USER 和 REPO 是否拼写正确；\n"
+                 "2) 仓库是否为公开（Settings → Change visibility → Public）；\n"
+                 "3) data/reviews/ 下是否有复盘 .json 文件。")
+        return
 
-    try:
-        data = get_json("latest.json" if date == "latest" else f"{date}.json")
-    except Exception as e:
-        st.error(f"加载失败：{e}。请确认数据文件已生成并推送。")
+    date = st.selectbox("📅 选择复盘日期", options=dates,
+                        index=len(dates) - 1,
+                        format_func=lambda d: d)
+
+    data, err = get_review(date)
+    if err or data is None:
+        st.error(f"读取 {date}.json 失败：{err}")
         return
 
     meta = data.get("meta") or {}
