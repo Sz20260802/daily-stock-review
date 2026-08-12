@@ -72,26 +72,28 @@ def fetch_indices():
 
 
 def fetch_market_stats():
+    """涨跌家数、涨停/跌停（乐咕乐股·赚钱效应）——兼容 item/value 长格式"""
     df = ak.stock_market_activity_legu()
     if df is None or df.empty:
         raise ValueError("返回为空")
-    r = df.iloc[0]
-
-    def get_num(*names):
-        for n in names:
-            if n in r.index:
-                try:
-                    return int(r[n])
-                except Exception:
-                    pass
-        return None
+    mapping = {}
+    if "item" in df.columns and "value" in df.columns:
+        for _, row in df.iterrows():
+            try:
+                mapping[str(row["item"]).strip()] = float(row["value"])
+            except Exception:
+                pass
+    else:
+        r = df.iloc[0]
+        for key in r.index:
+            mapping[str(key).strip()] = r[key]
 
     return {
-        "advancers": get_num("上涨", "上涨家数"),
-        "decliners": get_num("下跌", "下跌家数"),
-        "flat": get_num("平盘", "平盘家数"),
-        "limit_up": get_num("涨停", "涨停家数"),
-        "limit_down": get_num("跌停", "跌停家数"),
+        "advancers": mapping.get("上涨"),
+        "decliners": mapping.get("下跌"),
+        "flat": mapping.get("平盘"),
+        "limit_up": mapping.get("涨停"),
+        "limit_down": mapping.get("跌停"),
     }
 
 
@@ -165,7 +167,7 @@ def main():
     args = parser.parse_args()
 
     date_str = args.date or datetime.now().strftime("%Y-%m-%d")
-    date_em = date_str.replace("-", "")   # 东财接口需要 YYYYMMDD
+    date_em = date_str.replace("-", "")
     raw_path = RAW_DIR / f"{date_str}.json"
 
     if args.lhb_only:

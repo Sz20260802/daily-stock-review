@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """根据 raw 数据生成复盘 JSON → data/reviews/{date}.json，并更新 latest.json / index.json
+研究类内容（主题/事件/关联/洞察）自动继承自最近一份历史复盘（种子 8/7 含完整内容）。
 用法:
-  python scripts/generate_report.py                 # 生成今天
-  python scripts/generate_report.py --date 2026-08-10   # 指定日期（补录）
-  python scripts/generate_report.py --merge         # 合并模式：保留已有主题/事件，只更新 market
+  python scripts/generate_report.py                        # 生成今天
+  python scripts/generate_report.py --date 2026-08-10      # 指定日期（补录）
+  python scripts/generate_report.py --merge                # 仅更新 market，保留当天已有内容
 """
 import argparse
 import json
@@ -66,10 +67,18 @@ def llm_summary(date_str, market, api_key):
 
 
 def build_market(raw):
+    """构造 market 数据；把 1558.0 这类整数浮点规范成 1558"""
+    st = raw.get("stats") or {}
+    stats = {}
+    for k, v in st.items():
+        if isinstance(v, float) and v.is_integer():
+            stats[k] = int(v)
+        else:
+            stats[k] = v
     return {
         "generated_at": raw.get("fetched_at", ""),
         "indices": raw.get("indices", []),
-        "stats": raw.get("stats", {}),
+        "stats": stats,
         "turnover_yi": raw.get("turnover_yi"),
         "broken_rate": raw.get("broken_rate"),
         "hot_sectors": raw.get("hot_sectors", []),
@@ -80,10 +89,32 @@ def build_market(raw):
     }
 
 
+def find_prev_review(date_str):
+    """找到日期严格早于 date_str 的最近一份复盘，用于继承研报内容"""
+    candidates = []
+    for p in REVIEW_DIR.glob("*.json"):
+        name = p.stem
+        if name in ("latest", "index"):
+            continue
+        try:
+            datetime.strptime(name, "%Y-%m-%d")
+        except ValueError:
+            continue
+        if name < date_str:
+            candidates.append(name)
+    if not candidates:
+        return {}
+    candidates.sort()
+    try:
+        return json.loads((REVIEW_DIR / f"{candidates[-1]}.json").read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=None, help="日期 YYYY-MM-DD，默认今天")
-    parser.add_argument("--merge", action="store_true", help="保留已有主题/事件等内容，只更新 market")
+    parser.add_argument("--merge", action="store_true", help="仅更新 market，保留当天已有内容")
     args = parser.parse_args()
 
     date_str = args.date or datetime.now().strftime("%Y-%m-%d")
@@ -97,10 +128,12 @@ def main():
         return 0
 
     out_path = REVIEW_DIR / f"{date_str}.json"
-    prev = {}
+    prev = find_prev_review(date_str)
     if args.merge and out_path.exists():
-        prev = json.loads(out_path.read_text(encoding="utf-8"))
-        print("合并模式：保留已有主题/事件/关联/洞察。")
+        cur = json.loads(out_path.read_text(encoding="utf-8"))
+        if cur.get("themes"):
+            prev = cur
+            print("合并模式：保留当天已有主题/事件/关联/洞察。")
 
     market = build_market(raw)
     if prev.get("market", {}).get("summary"):
@@ -139,6 +172,8 @@ def main():
         encoding="utf-8")
 
     print(f"已生成复盘 {out_path}")
+    print(f"继承内容: 主题{len(review['themes'])}个 / 事件{len(review['calendar_events'])}个 / "
+          f"关联{len(review['correlations'])}组 / 洞察{len(review['insights'])}条")
     return 0
 
 
