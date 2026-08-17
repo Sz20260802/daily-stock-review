@@ -98,15 +98,29 @@ def fetch_market_stats():
 
 
 def fetch_hot_sectors():
-    df = ak.stock_sector_fund_flow_rank(indicator="今日", sector_type="行业资金流")
-    out = []
-    for _, r in df.head(5).iterrows():
-        out.append({
-            "name": str(r["名称"]),
-            "change_pct": float(r["今日涨跌幅"]),
-            "main_net_inflow_yi": round(float(r["主力净流入-净额"]) / 1e8, 2),
-        })
-    return out
+    """热门板块 TOP5：优先东财资金流，失败回退新浪板块行情"""
+    try:
+        df = ak.stock_sector_fund_flow_rank(indicator="今日", sector_type="行业资金流")
+        out = []
+        for _, r in df.head(5).iterrows():
+            out.append({
+                "name": str(r["名称"]),
+                "change_pct": float(r["今日涨跌幅"]),
+                "main_net_inflow_yi": round(float(r["主力净流入-净额"]) / 1e8, 2),
+            })
+        return out
+    except Exception as e:
+        print(f"[info] 东财板块资金流失败({e})，改用新浪板块行情…")
+        df = ak.stock_sector_spot(indicator="新浪行业")
+        df = df.sort_values(by="涨跌幅", ascending=False)
+        out = []
+        for _, r in df.head(5).iterrows():
+            out.append({
+                "name": str(r["板块"]),
+                "change_pct": float(r["涨跌幅"]),
+                "main_net_inflow_yi": None,
+            })
+        return out
 
 
 def fetch_limit_up(date_em):

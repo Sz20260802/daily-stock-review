@@ -1,11 +1,11 @@
 {
   "meta": {
     "date": "2026-08-17",
-    "generated_at": "2026-08-17T11:46:05+08:00",
+    "generated_at": "2026-08-17T21:59:46+08:00",
     "source": "local-script"
   },
   "market": {
-    "generated_at": "2026-08-17T10:17:02+08:00",
+    "generated_at": "2026-08-17T21:59:00+08:00",
     "indices": [
       {
         "code": "sh000001",
@@ -47,7 +47,33 @@
     },
     "turnover_yi": null,
     "broken_rate": 9.8,
-    "hot_sectors": [],
+    "hot_sectors": [
+      {
+        "name": "机械行业",
+        "change_pct": 3.6360858605149,
+        "main_net_inflow_yi": null
+      },
+      {
+        "name": "发电设备",
+        "change_pct": 3.5905698221155,
+        "main_net_inflow_yi": null
+      },
+      {
+        "name": "电子器件",
+        "change_pct": 3.3661471151217,
+        "main_net_inflow_yi": null
+      },
+      {
+        "name": "摩托车",
+        "change_pct": 3.0586236193713,
+        "main_net_inflow_yi": null
+      },
+      {
+        "name": "有色金属",
+        "change_pct": 3.0150889593145,
+        "main_net_inflow_yi": null
+      }
+    ],
     "limit_up_ladder": {
       "top10": [
         {
