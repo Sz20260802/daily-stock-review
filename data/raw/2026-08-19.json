@@ -1,0 +1,271 @@
+{
+  "date": "2026-08-19",
+  "fetched_at": "2026-08-19T10:01:49+08:00",
+  "indices": [
+    {
+      "code": "sh000001",
+      "name": "上证指数",
+      "value": 3894.4224,
+      "change_pct": -2.403
+    },
+    {
+      "code": "sz399001",
+      "name": "深证成指",
+      "value": 13890.152,
+      "change_pct": -5.008
+    },
+    {
+      "code": "sz399006",
+      "name": "创业板指",
+      "value": 3473.493,
+      "change_pct": -6.263
+    },
+    {
+      "code": "sh000688",
+      "name": "科创50",
+      "value": 1667.5155,
+      "change_pct": -6.888
+    },
+    {
+      "code": "sh000300",
+      "name": "沪深300",
+      "value": 4588.6955,
+      "change_pct": -2.901
+    }
+  ],
+  "turnover_yi": null,
+  "stats": {
+    "advancers": 420.0,
+    "decliners": 4760.0,
+    "flat": 24.0,
+    "limit_up": 38.0,
+    "limit_down": 130.0
+  },
+  "broken_rate": 24.0,
+  "hot_sectors": [
+    {
+      "name": "金融行业",
+      "change_pct": 0.049687795021283,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "酿酒行业",
+      "change_pct": -0.30853114605383,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "公路桥梁",
+      "change_pct": -0.38769707934867,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "煤炭行业",
+      "change_pct": -0.92173388126582,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "交通运输",
+      "change_pct": -1.2376764309525,
+      "main_net_inflow_yi": null
+    }
+  ],
+  "limit_up_ladder": {
+    "top10": [
+      {
+        "name": "金健米业",
+        "code": "600127",
+        "consecutive": 3
+      },
+      {
+        "name": "红四方",
+        "code": "603395",
+        "consecutive": 3
+      },
+      {
+        "name": "京粮控股",
+        "code": "000505",
+        "consecutive": 3
+      },
+      {
+        "name": "日丰股份",
+        "code": "002953",
+        "consecutive": 2
+      },
+      {
+        "name": "深华发Ａ",
+        "code": "000020",
+        "consecutive": 2
+      },
+      {
+        "name": "万向德农",
+        "code": "600371",
+        "consecutive": 2
+      },
+      {
+        "name": "学大教育",
+        "code": "000526",
+        "consecutive": 2
+      },
+      {
+        "name": "罗普斯金",
+        "code": "002333",
+        "consecutive": 1
+      },
+      {
+        "name": "鲁信创投",
+        "code": "600783",
+        "consecutive": 1
+      },
+      {
+        "name": "宝泰隆",
+        "code": "601011",
+        "consecutive": 1
+      }
+    ],
+    "max_board": 3,
+    "ladders": {
+      "3板": [
+        "金健米业",
+        "红四方",
+        "京粮控股"
+      ],
+      "2板": [
+        "日丰股份",
+        "深华发Ａ",
+        "万向德农",
+        "学大教育"
+      ],
+      "1板": [
+        "罗普斯金",
+        "鲁信创投",
+        "宝泰隆",
+        "南都物业",
+        "尚太科技",
+        "哈三联",
+        "百合股份",
+        "志邦家居",
+        "我爱我家",
+        "汉森制药",
+        "中交发展",
+        "亨迪药业",
+        "美锦能源",
+        "西点药业",
+        "好太太",
+        "速达股份",
+        "永顺泰",
+        "大有能源",
+        "斯达半导",
+        "江顺科技",
+        "金利华电",
+        "陕西黑猫",
+        "中毅达",
+        "日出东方",
+        "南 京 港",
+        "华锦股份",
+        "亿田智能",
+        "万和电气",
+        "金能科技"
+      ]
+    }
+  },
+  "broken_board": {
+    "count": 12,
+    "top": [
+      {
+        "name": "丰原药业",
+        "code": "000153"
+      },
+      {
+        "name": "农发种业",
+        "code": "600313"
+      },
+      {
+        "name": "神奇制药",
+        "code": "600613"
+      },
+      {
+        "name": "红棉股份",
+        "code": "000523"
+      },
+      {
+        "name": "哈森股份",
+        "code": "603958"
+      }
+    ]
+  },
+  "lhb": {
+    "count": 83,
+    "top10": [
+      {
+        "name": "深华发A",
+        "code": "000020",
+        "close_pct": 10.008,
+        "net_buy_yi": -0.04,
+        "reason": "主力做T，成功率27.90%"
+      },
+      {
+        "name": "京粮控股",
+        "code": "000505",
+        "close_pct": 10.0147,
+        "net_buy_yi": 0.25,
+        "reason": "1家机构买入，成功率40.90%"
+      },
+      {
+        "name": "京粮控股",
+        "code": "000505",
+        "close_pct": 10.0147,
+        "net_buy_yi": 0.48,
+        "reason": "普通席位买入，成功率39.38%"
+      },
+      {
+        "name": "学大教育",
+        "code": "000526",
+        "close_pct": 9.9887,
+        "net_buy_yi": -0.0,
+        "reason": "2家机构买入，成功率28.16%"
+      },
+      {
+        "name": "我爱我家",
+        "code": "000560",
+        "close_pct": 10.1852,
+        "net_buy_yi": -0.44,
+        "reason": "普通席位买入，成功率48.17%"
+      },
+      {
+        "name": "盈新发展",
+        "code": "000620",
+        "close_pct": 3.8123,
+        "net_buy_yi": -1.28,
+        "reason": "2家机构买入，成功率28.47%"
+      },
+      {
+        "name": "美锦能源",
+        "code": "000723",
+        "close_pct": 9.887,
+        "net_buy_yi": 0.48,
+        "reason": "主力做T，成功率37.79%"
+      },
+      {
+        "name": "坤泰股份",
+        "code": "001260",
+        "close_pct": -9.9949,
+        "net_buy_yi": -0.25,
+        "reason": "主力做T，成功率34.73%"
+      },
+      {
+        "name": "铖昌科技",
+        "code": "001270",
+        "close_pct": -8.4233,
+        "net_buy_yi": -1.85,
+        "reason": "3家机构卖出，成功率13.90%"
+      },
+      {
+        "name": "尚太科技",
+        "code": "001301",
+        "close_pct": 10.0071,
+        "net_buy_yi": 0.16,
+        "reason": "1家机构买入，成功率43.25%"
+      }
+    ]
+  }
+}
