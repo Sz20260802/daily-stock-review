@@ -1,7 +1,7 @@
 {
   "meta": {
     "date": "2026-09-01",
-    "generated_at": "2026-09-01T08:50:24+08:00",
+    "generated_at": "2026-09-01T10:47:31+08:00",
     "source": "local-script"
   },
   "market": {
@@ -252,7 +252,7 @@
       ]
     },
     "lhb": {
-      "count": 50,
+      "count": 79,
       "top10": [
         {
           "name": "深物业A",
