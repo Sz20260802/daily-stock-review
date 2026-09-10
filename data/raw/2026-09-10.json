@@ -1,0 +1,272 @@
+{
+  "date": "2026-09-10",
+  "fetched_at": "2026-09-10T13:06:43+08:00",
+  "indices": [
+    {
+      "code": "sh000001",
+      "name": "上证指数",
+      "value": 3934.4036,
+      "change_pct": -0.433
+    },
+    {
+      "code": "sz399001",
+      "name": "深证成指",
+      "value": 13617.67,
+      "change_pct": -0.77
+    },
+    {
+      "code": "sz399006",
+      "name": "创业板指",
+      "value": 3338.422,
+      "change_pct": -0.493
+    },
+    {
+      "code": "sh000688",
+      "name": "科创50",
+      "value": 1569.2182,
+      "change_pct": -0.686
+    },
+    {
+      "code": "sh000300",
+      "name": "沪深300",
+      "value": 4548.3898,
+      "change_pct": -0.529
+    }
+  ],
+  "turnover_yi": null,
+  "stats": {
+    "advancers": 931.0,
+    "decliners": 4192.0,
+    "flat": 83.0,
+    "limit_up": 39.0,
+    "limit_down": 14.0
+  },
+  "broken_rate": 36.1,
+  "hot_sectors": [
+    {
+      "name": "船舶制造",
+      "change_pct": 2.6053423626787,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "电力行业",
+      "change_pct": 1.3770428391838,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "金融行业",
+      "change_pct": 0.93259318001586,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "玻璃行业",
+      "change_pct": 0.83694696303484,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "飞机制造",
+      "change_pct": 0.8064752632042,
+      "main_net_inflow_yi": null
+    }
+  ],
+  "limit_up_ladder": {
+    "top10": [
+      {
+        "name": "桂林旅游",
+        "code": "000978",
+        "consecutive": 4
+      },
+      {
+        "name": "瑞尔特",
+        "code": "002790",
+        "consecutive": 3
+      },
+      {
+        "name": "云煤能源",
+        "code": "600792",
+        "consecutive": 3
+      },
+      {
+        "name": "新农开发",
+        "code": "600359",
+        "consecutive": 2
+      },
+      {
+        "name": "国创高新",
+        "code": "002377",
+        "consecutive": 2
+      },
+      {
+        "name": "长城电工",
+        "code": "600192",
+        "consecutive": 2
+      },
+      {
+        "name": "闽东电力",
+        "code": "000993",
+        "consecutive": 2
+      },
+      {
+        "name": "鼎信通讯",
+        "code": "603421",
+        "consecutive": 2
+      },
+      {
+        "name": "渝三峡Ａ",
+        "code": "000565",
+        "consecutive": 2
+      },
+      {
+        "name": "新力金融",
+        "code": "600318",
+        "consecutive": 1
+      }
+    ],
+    "max_board": 4,
+    "ladders": {
+      "4板": [
+        "桂林旅游"
+      ],
+      "3板": [
+        "瑞尔特",
+        "云煤能源"
+      ],
+      "2板": [
+        "新农开发",
+        "国创高新",
+        "长城电工",
+        "闽东电力",
+        "鼎信通讯",
+        "渝三峡Ａ"
+      ],
+      "1板": [
+        "新力金融",
+        "津药药业",
+        "中新赛克",
+        "太极实业",
+        "九鼎新材",
+        "水发燃气",
+        "克明食品",
+        "诚邦股份",
+        "凯盛新能",
+        "环旭电子",
+        "芯能科技",
+        "美能能源",
+        "湖南发展",
+        "百迈科",
+        "万和电气",
+        "华银电力",
+        "金安国纪",
+        "大连重工",
+        "超声电子",
+        "再升科技",
+        "游族网络",
+        "天顺风能",
+        "南宁百货",
+        "乐山电力",
+        "京基智农",
+        "华金资本"
+      ]
+    }
+  },
+  "broken_board": {
+    "count": 22,
+    "top": [
+      {
+        "name": "红棉股份",
+        "code": "000523"
+      },
+      {
+        "name": "南 京 港",
+        "code": "002040"
+      },
+      {
+        "name": "金煤科技",
+        "code": "600844"
+      },
+      {
+        "name": "中基健康",
+        "code": "000972"
+      },
+      {
+        "name": "海通发展",
+        "code": "603162"
+      }
+    ]
+  },
+  "lhb": {
+    "count": 64,
+    "top10": [
+      {
+        "name": "深中华A",
+        "code": "000017",
+        "close_pct": -10.0432,
+        "net_buy_yi": -0.01,
+        "reason": "西藏自治区资金卖出，成功率52.37%"
+      },
+      {
+        "name": "红棉股份",
+        "code": "000523",
+        "close_pct": 2.2936,
+        "net_buy_yi": -1.23,
+        "reason": "1家机构买入，成功率37.32%"
+      },
+      {
+        "name": "渝三峡A",
+        "code": "000565",
+        "close_pct": 10.0139,
+        "net_buy_yi": 0.31,
+        "reason": "2家机构买入，成功率41.15%"
+      },
+      {
+        "name": "渝三峡A",
+        "code": "000565",
+        "close_pct": 10.0139,
+        "net_buy_yi": 0.8,
+        "reason": "买一主买，成功率35.31%"
+      },
+      {
+        "name": "中百集团",
+        "code": "000759",
+        "close_pct": 2.5974,
+        "net_buy_yi": -0.62,
+        "reason": "1家机构买入，成功率27.59%"
+      },
+      {
+        "name": "超声电子",
+        "code": "000823",
+        "close_pct": 10.0,
+        "net_buy_yi": 0.92,
+        "reason": "主力做T，成功率36.38%"
+      },
+      {
+        "name": "泸天化",
+        "code": "000912",
+        "close_pct": -10.0,
+        "net_buy_yi": -0.37,
+        "reason": "1家机构卖出，成功率38.80%"
+      },
+      {
+        "name": "桂林旅游",
+        "code": "000978",
+        "close_pct": 9.9886,
+        "net_buy_yi": -0.09,
+        "reason": "普通席位买入，成功率43.25%"
+      },
+      {
+        "name": "桂林旅游",
+        "code": "000978",
+        "close_pct": 9.9886,
+        "net_buy_yi": -0.31,
+        "reason": "3家机构买入，成功率18.77%"
+      },
+      {
+        "name": "闽东电力",
+        "code": "000993",
+        "close_pct": 10.0262,
+        "net_buy_yi": 0.09,
+        "reason": "主力做T，成功率32.63%"
+      }
+    ]
+  }
+}
