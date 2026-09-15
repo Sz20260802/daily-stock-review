@@ -1,0 +1,271 @@
+{
+  "date": "2026-09-15",
+  "fetched_at": "2026-09-15T13:51:48+08:00",
+  "indices": [
+    {
+      "code": "sh000001",
+      "name": "上证指数",
+      "value": 3864.2794,
+      "change_pct": -0.542
+    },
+    {
+      "code": "sz399001",
+      "name": "深证成指",
+      "value": 13287.974,
+      "change_pct": -0.722
+    },
+    {
+      "code": "sz399006",
+      "name": "创业板指",
+      "value": 3247.918,
+      "change_pct": -1.146
+    },
+    {
+      "code": "sh000688",
+      "name": "科创50",
+      "value": 1551.9581,
+      "change_pct": 1.55
+    },
+    {
+      "code": "sh000300",
+      "name": "沪深300",
+      "value": 4450.0402,
+      "change_pct": -0.671
+    }
+  ],
+  "turnover_yi": null,
+  "stats": {
+    "advancers": 1054.0,
+    "decliners": 4103.0,
+    "flat": 48.0,
+    "limit_up": 32.0,
+    "limit_down": 34.0
+  },
+  "broken_rate": 42.9,
+  "hot_sectors": [
+    {
+      "name": "玻璃行业",
+      "change_pct": 0.63332933125225,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "陶瓷行业",
+      "change_pct": 0.17481753419868,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "开发区",
+      "change_pct": 0.1499352552307,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "有色金属",
+      "change_pct": 0.10002101890977,
+      "main_net_inflow_yi": null
+    },
+    {
+      "name": "电子器件",
+      "change_pct": 0.076052455068315,
+      "main_net_inflow_yi": null
+    }
+  ],
+  "limit_up_ladder": {
+    "top10": [
+      {
+        "name": "闽东电力",
+        "code": "000993",
+        "consecutive": 5
+      },
+      {
+        "name": "中新赛克",
+        "code": "002912",
+        "consecutive": 4
+      },
+      {
+        "name": "双星新材",
+        "code": "002585",
+        "consecutive": 3
+      },
+      {
+        "name": "澳弘电子",
+        "code": "605058",
+        "consecutive": 3
+      },
+      {
+        "name": "启明信息",
+        "code": "002232",
+        "consecutive": 2
+      },
+      {
+        "name": "博汇科技",
+        "code": "688004",
+        "consecutive": 2
+      },
+      {
+        "name": "宏盛股份",
+        "code": "603090",
+        "consecutive": 2
+      },
+      {
+        "name": "金龙羽",
+        "code": "002882",
+        "consecutive": 1
+      },
+      {
+        "name": "华瓷股份",
+        "code": "001216",
+        "consecutive": 1
+      },
+      {
+        "name": "华正新材",
+        "code": "603186",
+        "consecutive": 1
+      }
+    ],
+    "max_board": 5,
+    "ladders": {
+      "5板": [
+        "闽东电力"
+      ],
+      "4板": [
+        "中新赛克"
+      ],
+      "3板": [
+        "双星新材",
+        "澳弘电子"
+      ],
+      "2板": [
+        "启明信息",
+        "博汇科技",
+        "宏盛股份"
+      ],
+      "1板": [
+        "金龙羽",
+        "华瓷股份",
+        "华正新材",
+        "上海洗霸",
+        "汉王科技",
+        "会稽山",
+        "诺德股份",
+        "英联股份",
+        "欧克科技",
+        "和顺石油",
+        "通鼎互联",
+        "吉鑫科技",
+        "大金重工",
+        "大为股份",
+        "中晶科技",
+        "德尔未来",
+        "天顺风能",
+        "新中港",
+        "北自科技",
+        "锡华科技",
+        "天龙股份",
+        "中闽能源",
+        "国邦医药",
+        "西陇科学",
+        "浙江众成"
+      ]
+    }
+  },
+  "broken_board": {
+    "count": 24,
+    "top": [
+      {
+        "name": "安凯客车",
+        "code": "000868"
+      },
+      {
+        "name": "三力制药",
+        "code": "603439"
+      },
+      {
+        "name": "欧亚集团",
+        "code": "600697"
+      },
+      {
+        "name": "奥瑞德",
+        "code": "600666"
+      },
+      {
+        "name": "中视传媒",
+        "code": "600088"
+      }
+    ]
+  },
+  "lhb": {
+    "count": 73,
+    "top10": [
+      {
+        "name": "华天酒店",
+        "code": "000428",
+        "close_pct": -10.0437,
+        "net_buy_yi": 0.17,
+        "reason": "主力做T，成功率40.14%"
+      },
+      {
+        "name": "红棉股份",
+        "code": "000523",
+        "close_pct": -9.9723,
+        "net_buy_yi": -0.08,
+        "reason": "1家机构卖出，成功率29.22%"
+      },
+      {
+        "name": "红棉股份",
+        "code": "000523",
+        "close_pct": -9.9723,
+        "net_buy_yi": -1.15,
+        "reason": "2家机构卖出，成功率22.20%"
+      },
+      {
+        "name": "中百集团",
+        "code": "000759",
+        "close_pct": -10.0,
+        "net_buy_yi": -0.4,
+        "reason": "1家机构卖出，成功率33.06%"
+      },
+      {
+        "name": "中百集团",
+        "code": "000759",
+        "close_pct": -10.0,
+        "net_buy_yi": 0.2,
+        "reason": "1家机构卖出，成功率19.95%"
+      },
+      {
+        "name": "超声电子",
+        "code": "000823",
+        "close_pct": 5.612,
+        "net_buy_yi": 0.87,
+        "reason": "3家机构买入，成功率40.06%"
+      },
+      {
+        "name": "中粮科技",
+        "code": "000930",
+        "close_pct": -6.0491,
+        "net_buy_yi": 0.62,
+        "reason": "2家机构卖出，成功率40.57%"
+      },
+      {
+        "name": "桂林旅游",
+        "code": "000978",
+        "close_pct": -10.0368,
+        "net_buy_yi": -0.03,
+        "reason": "2家机构卖出，成功率46.57%"
+      },
+      {
+        "name": "桂林旅游",
+        "code": "000978",
+        "close_pct": -10.0368,
+        "net_buy_yi": -0.03,
+        "reason": "2家机构卖出，成功率46.57%"
+      },
+      {
+        "name": "众泰汽车",
+        "code": "000980",
+        "close_pct": -3.0043,
+        "net_buy_yi": -0.3,
+        "reason": "1家机构卖出，成功率34.99%"
+      }
+    ]
+  }
+}
